@@ -1,0 +1,13 @@
+Terraform.gitignore	
+#  Local .terraform directories
+**/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+
+# Binaries for terraform
+*.terraform
+*.terraform.lock.hcl
+*.terraform/
+*.tfstate.backup
