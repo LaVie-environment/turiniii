@@ -171,3 +171,12 @@ resource "aws_security_group" "uat-alb" {
   }
 }
 
+terraform {
+  backend "s3" {
+    bucket = "works-up-and-running-state"
+    key = "stage/services/webserver-cluster/terraform.tfstate"
+    region = "eu-west-2"
+    dynamodb_table = "works-up-and-running-state"
+    encrypt = true
+  }
+}
