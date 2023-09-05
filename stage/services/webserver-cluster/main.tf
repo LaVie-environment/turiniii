@@ -13,17 +13,28 @@ provider "aws" {
   region = "eu-west-2"
 }
 
-resource "aws_launch_configuration" "uat-lcg" {
-  image_id        = "ami-0eb260c4d5475b901"
-  instance_type   = "t2.micro"
-  security_groups = [aws_security_group.uat-sg.id]
+resource "aws_launch_template" "uat-lt" {
+  name_prefix   = "uat-ltmp"
+  image_id      = "ami-0eb260c4d5475b901"
+  instance_type = "t2.micro"
+
+  block_device_mappings {
+    device_name = "/dev/xvda"
+    ebs {
+      volume_size = 8
+      volume_type = "gp2"
+    }
+  }
+
+  network_interfaces {
+    security_groups = [aws_security_group.uat-sg.id]
+  }
 
   user_data = <<-EOF
               #!/bin/bash
               echo "Hello, World" > index.html
               nohup busybox httpd -f -p ${var.server_port} &
               EOF
-
 }
 
 resource "aws_autoscaling_group" "uat-asg" {
