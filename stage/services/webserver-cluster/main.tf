@@ -30,15 +30,19 @@ resource "aws_launch_template" "uat-lt" {
     security_groups = [aws_security_group.uat-sg.id]
   }
 
-  user_data = <<-EOF
+  user_data = base64encode(<<EOF
               #!/bin/bash
               echo "Hello, World" > index.html
               nohup busybox httpd -f -p ${var.server_port} &
               EOF
+  )
 }
 
 resource "aws_autoscaling_group" "uat-asg" {
-  launch_configuration = aws_launch_configuration.uat-lcg.name
+  launch_template {
+    id = aws_launch_template.uat-lt.id 
+  }
+  
   vpc_zone_identifier  = data.aws_subnets.default.ids
 
   target_group_arns = [aws_lb_target_group.asg.arn]
@@ -182,6 +186,7 @@ resource "aws_security_group" "uat-alb" {
   }
 }
 
+/*
 terraform {
   backend "s3" {
     bucket = "works-up-and-running-state"
@@ -191,3 +196,4 @@ terraform {
     encrypt = true
   }
 }
+*/
